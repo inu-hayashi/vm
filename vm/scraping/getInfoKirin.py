@@ -7,33 +7,45 @@ cur = con.cursor()
 
 url = 'https://www.kirin.co.jp/products/list/nutrition/softdrink/'
 r = requests.get(url)
-soup = BeautifulSoup(r.content, 'lxml')
+soup = BeautifulSoup(r.content, 'lxml',from_encoding='utf-8')
 titles = soup.select(".thumb")
+materials = soup.select('.explanation')
 
-# sql="insert into drink (id,material,allr,image,brand) VALUES (2,'title','sa','sasa','sasasa');"
-#     #sqlに書いた処理を実行する
-n=1
-titles = soup.select(".thumb")
-for title in titles:
-    title = title.text
-    title = title.replace('\u3000', '')
 
-    sql='REPLACE INTO drink (id,title,material,allr,image,brand) VALUES (?,?,?,?,?,?);'
+tr = soup.select(".nutrition  .thumb")
+tr = len(tr)
 
-    data = (n,title,'','','','')
-    # print(data)
+def getInfoKirin(titles,materials):
+    for i in range(tr):
+        n=1
+        for title in titles:
+            title = title.text
+            title = title.replace('\u3000', '')
 
-    cur.execute(sql,data)
-    # exe="'"+str(date)+"'"+(",")+"'"+str(id)+"'"+(",")+"'"+str(price)+"'"
+        for material in materials:
+            material = material.text
+            material = material.replace('\u3000', '')
 
-# sql = "select * from drink";
-# cur.execute(sql)
-# for row in cur:
-#     print(row[0], row[1])
-    n += 1
+    # titles = soup.select(".thumb")
+    # for title in titles:
+    #     title = title.text
+    #     title = title.replace('\u3000', '')
 
-con.commit()
-con.close()
+        sql='REPLACE INTO drink (id,title,material,allr,image,brand) VALUES (?,?,?,?,?,?);'
+
+        data = (n,title,material,'','','')
+        print(data)
+
+        cur.execute(sql,data)
+
+        n += 1
+
+
+        i += 1
+    con.commit()
+    con.close()
+
+getInfoKirin(titles,materials)
 
 
 
