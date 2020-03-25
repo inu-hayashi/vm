@@ -1,9 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
-import sqlite3
+import json
+import codecs
+# import sqlite3
 
-con = sqlite3.connect("/vm.sqlite3")
-cur = con.cursor()
+# con = sqlite3.connect("/vm.sqlite3")
+# cur = con.cursor()
 
 url = 'https://www.kirin.co.jp/products/list/nutrition/softdrink/'
 r = requests.get(url)
@@ -18,6 +20,7 @@ tr = len(tr)
 
 
 def getInfoKirin(titles,materials,allrs):
+    jsonArray ={}
     for i in range(tr):
         title = titles[i]
         title = title.text.replace('\u3000', ' ')
@@ -28,33 +31,24 @@ def getInfoKirin(titles,materials,allrs):
         allr = allrs[i]
         allr = allr.text
 
+        # sql='REPLACE INTO drink (id,title,material,allr,image) VALUES (?,?,?,?,?,?);'
 
-    # titles = soup.select(".thumb")
-    # for title in titles:
-    #     title = title.text
-    #     title = title.replace('\u3000', '')
+        jsonArray[title] = {"material":material,"allr":allr}
 
-        sql='REPLACE INTO drink (id,title,material,allr,image) VALUES (?,?,?,?,?,?);'
+        # jsonData = json.dumps(jsonArray, indent=4, ensure_ascii=False)
 
-        data = (i,title,material,allr,'',)
-        print(data)
+        # data = (i,title,material,allr,'',)
+        # print(jsonData)
 
-        cur.execute(sql,data)
+        # cur.execute(sql,data)
 
+        f= codecs.open('kirin.json','w','utf-8')
+        json.dump(jsonArray,f, indent=4, ensure_ascii=False)
+
+        # with open('kirin.json', 'w') as fp:
+        #     json.dump(jsonArray, fp, indent=4, ensure_ascii=False)
+        # con.commit()
         i += 1
-    con.commit()
-    con.close()
+    # con.close()
 
 getInfoKirin(titles,materials,allrs)
-
-
-
-
-
-# ccontents = []
-# for
-
-
-# materials = soup.select('.explanation')
-# for material in materials:
-#     print(material.text)
